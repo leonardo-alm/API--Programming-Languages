@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace ProgrammingLanguages.Controllers
 {
     [ApiController]
-    [Route("language")]
+    [Route("languages")]
     public class LanguageController : ControllerBase
     {
         private readonly ILogger<LanguageController> _logger;
@@ -19,10 +19,17 @@ namespace ProgrammingLanguages.Controllers
             languages = JsonSerializer.Deserialize<List<Language>>(json);
         }
 
-        [HttpGet(Name = "GetLanguages")]
+        [HttpGet]
         public IEnumerable<Language> Get()
         {
             return languages;
+        }
+
+        [HttpGet("byyear")]
+        public IEnumerable<Language> GetLanguageByYear([FromQuery]string year )
+        {
+            var languagesByYear = languages.Where(y => y.Year == year).ToList();
+            return languagesByYear;
         }
     }
 }
