@@ -20,19 +20,19 @@ namespace ProgrammingLanguages.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Language>> Get()
+        public async Task<ActionResult<Language>> Read()
         {
             using var reader = new StreamReader("./languages.json");
-            string json = reader.ReadToEnd();
+            string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
-            return languages;
+            return Ok(languages) ;
         }
 
-        [HttpGet("byyear")]
-        public ActionResult<IEnumerable<Language>> GetLanguageByYear([FromQuery]string year, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+        [HttpGet("year")]
+        public async Task<ActionResult<Language>> ReadLanguageByYear([FromQuery] string year, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
             using var reader = new StreamReader("./languages.json");
-            string json = reader.ReadToEnd();
+            string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
             if (!string.IsNullOrWhiteSpace(year))
@@ -42,24 +42,61 @@ namespace ProgrammingLanguages.Controllers
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
-                
-                if (languagesByYear == null)
+
+                var numberOfLanguages = languagesByYear.Count();
+
+                if (numberOfLanguages == 0)
                 {
-                    return NotFound();
+                    return NotFound(new
+                    {
+                        message = "No language found"
+                    });
                 }
-                return languagesByYear;
+                var returnMessage = $"{numberOfLanguages} languages were created in the year {year}";
+
+                if (numberOfLanguages == 1)
+                {
+                    returnMessage = $"{numberOfLanguages} language was created in the year {year}";
+                }
+                return Ok(new
+                {
+                    message = returnMessage,
+                    Data = languagesByYear
+                }); 
             }
             
             else
             {
-                return languages;
+                return Ok();
             }
         }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<Language>> ReadLanguageByName(string name)
+        {
+            using var reader = new StreamReader("./languages.json");
+            string json = await reader.ReadToEndAsync();
+            languages = JsonSerializer.Deserialize<List<Language>>(json);
+
+                var language = languages
+                    .Where(n => n.Name == name)
+                    .ToList();
+
+                if (language.Count() == 0)
+                {
+                    return NotFound(new
+                    {
+                        message = "No language found"
+                    });
+                }
+                return Ok();
+            }
+        
         [HttpPost]
-        public object CreateLanguage([FromBody] NewLanguage request)
+        public async Task<ActionResult<object>> CreateLanguage([FromBody] Language request)
         {
             var reader = new StreamReader("./languages.json");
-            string json = reader.ReadToEnd();
+            string json = await reader.ReadToEndAsync();
             reader.Dispose();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
@@ -71,10 +108,64 @@ namespace ProgrammingLanguages.Controllers
                 Predecessors = request.Predecessors
             };
             languages.Add(language);
+
             var content = JsonSerializer.Serialize(languages);
             System.IO.File.WriteAllText("./languages.json", content);
-            return null;
 
+            return Created("http://localhost:44338//languages", language);
+
+        }
+
+        [HttpPut("{name}")]
+        public async Task<ActionResult<object>> UpdateLanguage(string name, [FromBody] UpdateLanguage request)
+        {
+            var reader = new StreamReader("./languages.json");
+            string json = await reader.ReadToEndAsync();
+            reader.Dispose();
+            languages = JsonSerializer.Deserialize<List<Language>>(json);
+
+
+            var languageToUpdate = languages
+            .Where(l => l.Name == name)
+            .First();
+
+            languages.Remove(languageToUpdate);
+
+            var updatedLanguage = new Language
+            {
+                Name = name,
+                Year = request.Year,
+                Chiefdevelopercompany = request.Chiefdevelopercompany,
+                Predecessors = request.Predecessors
+            };
+
+            languages.Add(updatedLanguage);
+
+            var content = JsonSerializer.Serialize(languages);
+            System.IO.File.WriteAllText("./languages.json", content);
+
+            return Ok();
+
+        }
+
+        [HttpDelete("{name}")]
+        public async Task<ActionResult<Language>> DeleteLanguage(string name)
+        {
+            var reader = new StreamReader("./languages.json");
+            string json = await reader.ReadToEndAsync();
+            reader.Dispose();
+            languages = JsonSerializer.Deserialize<List<Language>>(json);
+
+            var languageToDelete = languages
+                .Where(l => l.Name == name)
+                .First();
+
+            languages.Remove(languageToDelete);
+
+            var content = JsonSerializer.Serialize(languages);
+            System.IO.File.WriteAllText("./languages.json", content);
+
+            return Ok();
         }
     }
 }
