@@ -25,7 +25,7 @@ namespace ProgrammingLanguages.Controllers
             using var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
-            return Ok(languages) ;
+            return Ok(languages);
         }
 
         [HttpGet("year")]

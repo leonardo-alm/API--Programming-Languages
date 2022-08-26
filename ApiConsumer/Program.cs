@@ -17,21 +17,29 @@ namespace ApiConsumer
         }
         public static async Task GetAllLanguages(string url)
         {
-            HttpClient httpClient = new HttpClient();
-
-            var response = await httpClient.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
-            List<Language> languages = JsonSerializer.Deserialize<List<Language>>(content);
-
-            foreach (var language in languages)
+            try
             {
-                Console.WriteLine($"{language.Name} was created in {language.Year} by {language.Chiefdevelopercompany} and inspired by {language.Predecessors}");
+                HttpClient httpClient = new HttpClient();
+
+                var response = await httpClient.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+                var languages = JsonSerializer.Deserialize<List<Language>>(content);
+
+                foreach (var language in languages)
+                {
+                    Console.WriteLine($"{language.Name} was created in {language.Year} by {language.Chiefdevelopercompany} and inspired in {language.Predecessors}");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                throw;
             }
         }
-
     }
-
 }
+
 
 
 
