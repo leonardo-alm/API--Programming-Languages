@@ -1,0 +1,15 @@
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.csproj.AssemblyReference.cache
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.GeneratedMSBuildEditorConfig.editorconfig
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.AssemblyInfoInputs.cache
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.AssemblyInfo.cs
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.csproj.CoreCompileInputs.cache
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\bin\Debug\net6.0\ApiConsumer.exe
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\bin\Debug\net6.0\ApiConsumer.deps.json
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\bin\Debug\net6.0\ApiConsumer.runtimeconfig.json
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\bin\Debug\net6.0\ApiConsumer.dll
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\bin\Debug\net6.0\ApiConsumer.pdb
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.dll
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\refint\ApiConsumer.dll
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.pdb
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ApiConsumer.genruntimeconfig.cache
+D:\Programação\LetsCode\WebFullStack\Modulo5\Aula5\ProjetoAPI\ProgrammingLanguages\ApiConsumer\obj\Debug\net6.0\ref\ApiConsumer.dll
