@@ -29,7 +29,7 @@ namespace ProgrammingLanguages.Controllers
         }
 
         [HttpGet("year")]
-        public async Task<ActionResult<Language>> ReadLanguageByYear([FromQuery] string year, [FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+        public async Task<ActionResult<Language>> ReadLanguageByYear([FromQuery] string year)
         {
             using var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
@@ -39,8 +39,6 @@ namespace ProgrammingLanguages.Controllers
             {
                 var languagesByYear = languages
                     .Where(y => y.Year == year)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
                     .ToList();
 
                 var numberOfLanguages = languagesByYear.Count();
@@ -52,22 +50,18 @@ namespace ProgrammingLanguages.Controllers
                         message = "No language found"
                     });
                 }
-                var returnMessage = $"{numberOfLanguages} languages were created in the year {year}";
+                var returnMessage = $"{numberOfLanguages} languages were created in the year {year}:";
 
                 if (numberOfLanguages == 1)
                 {
-                    returnMessage = $"{numberOfLanguages} language was created in the year {year}";
+                    returnMessage = $"{numberOfLanguages} language was created in the year {year}:";
                 }
-                return Ok(new
-                {
-                    message = returnMessage,
-                    Data = languagesByYear
-                }); 
+                return Ok(languagesByYear);
             }
             
             else
             {
-                return Ok();
+                return Ok(languages);
             }
         }
 
@@ -78,18 +72,19 @@ namespace ProgrammingLanguages.Controllers
             string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
-                var language = languages
-                    .Where(n => n.Name == name)
-                    .ToList();
+            var language = languages
+                .Where(n => n.Name == name)
+                .FirstOrDefault();
+                    
 
-                if (language.Count() == 0)
+                if (language == null)
                 {
                     return NotFound(new
                     {
                         message = "No language found"
                     });
                 }
-                return Ok();
+                return Ok(language);
             }
         
         [HttpPost]
@@ -112,12 +107,12 @@ namespace ProgrammingLanguages.Controllers
             var content = JsonSerializer.Serialize(languages);
             System.IO.File.WriteAllText("./languages.json", content);
 
-            return Created("http://localhost:44338//languages", language);
+            return Ok(language);
 
         }
 
-        [HttpPut("{name}")]
-        public async Task<ActionResult<object>> UpdateLanguage(string name, [FromBody] UpdateLanguage request)
+        [HttpPut]
+        public async Task<ActionResult<object>> UpdateLanguage([FromQuery]string name, [FromBody] Language request)
         {
             var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
@@ -144,7 +139,7 @@ namespace ProgrammingLanguages.Controllers
             var content = JsonSerializer.Serialize(languages);
             System.IO.File.WriteAllText("./languages.json", content);
 
-            return Ok();
+            return Ok(updatedLanguage);
 
         }
 
