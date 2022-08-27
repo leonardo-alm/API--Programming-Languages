@@ -65,8 +65,8 @@ namespace ProgrammingLanguages.Controllers
             }
         }
 
-        [HttpGet("{name}")]
-        public async Task<ActionResult<Language>> ReadLanguageByName(string name)
+        [HttpGet("name")]
+        public async Task<ActionResult<Language>> ReadLanguageByName([FromQuery]  string name)
         {
             using var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();

@@ -36,39 +36,43 @@ namespace ApiConsumer
                         GetAllLanguages(url).GetAwaiter().GetResult();
                         break;
                     case "2":
-                        Console.WriteLine("Inform the desired year:");
+                        Console.WriteLine("Inform the desired year:\n");
                         string year = Console.ReadLine();
                         url = "https://localhost:44338/languages/year?year=" + year;
                         GetLanguagesByYear(url, year).GetAwaiter().GetResult();
                         break;
                     case "3":
+                        Console.WriteLine("Inform the desired language:\n");
+                        string name = Console.ReadLine();
+                        url = "https://localhost:44338/languages/name?name=" + name;
+                        GetLanguageByName(url).GetAwaiter().GetResult();
                         break;
                     case "4":
-                        Console.WriteLine("Inform the language to be updated:");
-                        string name = Console.ReadLine();
-                        Console.WriteLine("Inform the year of creation:");
+                        Console.WriteLine("Inform the language to be updated:\n");
+                        name = Console.ReadLine();
+                        Console.WriteLine("Inform the year of creation:\n");
                         year = Console.ReadLine();
-                        Console.WriteLine("Inform the chief developer and company:");
+                        Console.WriteLine("Inform the chief developer and company:\n");
                         string chiefdevelopercompany = Console.ReadLine();
-                        Console.WriteLine("Inform the predecessors:");
+                        Console.WriteLine("Inform the predecessors:\n");
                         string predecessors = Console.ReadLine();
                         url = "https://localhost:44338/languages?name=" + name;
                         UpdateLanguage(url, name, year, chiefdevelopercompany, predecessors).GetAwaiter().GetResult();
                         break;
                     case "5":
-                        Console.WriteLine("Inform the language to be added:");
+                        Console.WriteLine("Inform the language to be added:\n");
                         name = Console.ReadLine();
-                        Console.WriteLine("Inform the year of creation:");
+                        Console.WriteLine("\nInform the year of creation:\n");
                         year = Console.ReadLine();
-                        Console.WriteLine("Inform the chief developer and company:");
+                        Console.WriteLine("\nInform the chief developer and company:\n");
                         chiefdevelopercompany = Console.ReadLine();
-                        Console.WriteLine("Inform the predecessors:");
+                        Console.WriteLine("\nInform the predecessors:\n");
                         predecessors = Console.ReadLine();
                         url = "https://localhost:44338/languages/";
                         AddNewLanguage(url, name, year, chiefdevelopercompany, predecessors).GetAwaiter().GetResult();
                         break;
                     case "6":
-                        Console.WriteLine("Inform the language to be deleted:");
+                        Console.WriteLine("Inform the language to be deleted:\n");
                         name = Console.ReadLine();
                         url = "https://localhost:44338/languages/" + name;
                         DeleteLanguage(url, name).GetAwaiter().GetResult();
@@ -153,7 +157,7 @@ namespace ApiConsumer
 
                 string message = $"\n{languages.Count()} languages were created in {year}: \n";
 
-                if (languages.Count() == 1) message = $"1 language was created in {year}: \n";
+                if (languages.Count() == 1) message = $"\n1 language was created in {year}: \n";
 
                 Console.WriteLine(message);
 
@@ -161,6 +165,28 @@ namespace ApiConsumer
                 {
                     Console.WriteLine($"- {language.Name}\n");
                 }
+            }
+
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public static async Task GetLanguageByName(string url)
+        {
+            try
+            {
+                HttpClient httpClient = new HttpClient();
+
+                var response = await httpClient.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+                var language = JsonSerializer.Deserialize<Language>(content);
+
+
+                Console.WriteLine($"\n{language.Name} was created in {language.Year} by {language.Chiefdevelopercompany} and inspired in {language.Predecessors}\n");
+
             }
 
             catch (Exception ex)
