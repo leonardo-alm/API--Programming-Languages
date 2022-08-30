@@ -28,65 +28,38 @@ namespace ProgrammingLanguages.Controllers
             return Ok(languages);
         }
 
-        [HttpGet("year")]
-        public async Task<ActionResult<Language>> ReadLanguageByYear([FromQuery] string year)
+        [HttpGet("year/{year}")]
+        public async Task<ActionResult<Language>> ReadLanguageByYear(string year)
         {
             using var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
-            if (!string.IsNullOrWhiteSpace(year))
-            {
-                var languagesByYear = languages
-                    .Where(y => y.Year == year)
-                    .ToList();
+            var languagesByYear = languages
+                 .Where(y => y.Year == year)
+                 .ToList();
 
-                var numberOfLanguages = languagesByYear.Count();
+            if (!languagesByYear.Any()) return NotFound(new List<Language>());
 
-                if (numberOfLanguages == 0)
-                {
-                    return NotFound(new
-                    {
-                        message = "No language found"
-                    });
-                }
-                var returnMessage = $"{numberOfLanguages} languages were created in the year {year}:";
-
-                if (numberOfLanguages == 1)
-                {
-                    returnMessage = $"{numberOfLanguages} language was created in the year {year}:";
-                }
-                return Ok(languagesByYear);
-            }
-            
-            else
-            {
-                return Ok(languages);
-            }
+            return Ok(languagesByYear);
         }
 
         [HttpGet("name")]
-        public async Task<ActionResult<Language>> ReadLanguageByName([FromQuery]  string name)
+        public async Task<ActionResult<Language>> ReadLanguageByName(string? name)
         {
             using var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
             var language = languages
-                .Where(n => n.Name == name)
+                .Where(n => n.Name.ToLower() == name.ToLower())
                 .FirstOrDefault();
-                    
 
-                if (language == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "No language found"
-                    });
-                }
-                return Ok(language);
-            }
-        
+            if (language == null) return Ok("No correspondence");
+
+            return Ok(language);
+        }
+
         [HttpPost]
         public async Task<ActionResult<object>> CreateLanguage([FromBody] Language request)
         {
@@ -102,17 +75,17 @@ namespace ProgrammingLanguages.Controllers
                 Chiefdevelopercompany = request.Chiefdevelopercompany,
                 Predecessors = request.Predecessors
             };
+
             languages.Add(language);
 
             var content = JsonSerializer.Serialize(languages);
             System.IO.File.WriteAllText("./languages.json", content);
 
             return Ok(language);
-
         }
 
         [HttpPut]
-        public async Task<ActionResult<object>> UpdateLanguage([FromQuery]string name, [FromBody] Language request)
+        public async Task<ActionResult<object>> UpdateLanguage([FromQuery] string name, [FromBody] Language request)
         {
             var reader = new StreamReader("./languages.json");
             string json = await reader.ReadToEndAsync();
@@ -121,8 +94,10 @@ namespace ProgrammingLanguages.Controllers
 
 
             var languageToUpdate = languages
-            .Where(l => l.Name == name)
-            .First();
+            .Where(l => l.Name.ToLower() == name.ToLower())
+            .FirstOrDefault();
+
+            if (languageToUpdate == null) return Ok("No correspondence");
 
             languages.Remove(languageToUpdate);
 
@@ -152,8 +127,10 @@ namespace ProgrammingLanguages.Controllers
             languages = JsonSerializer.Deserialize<List<Language>>(json);
 
             var languageToDelete = languages
-                .Where(l => l.Name == name)
-                .First();
+                .Where(l => l.Name.ToLower() == name.ToLower())
+                .FirstOrDefault();
+
+            if (languageToDelete == null) return NotFound("No correspondence");
 
             languages.Remove(languageToDelete);
 

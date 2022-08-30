@@ -38,7 +38,7 @@ namespace ApiConsumer
                     case "2":
                         Console.WriteLine("Inform the desired year:\n");
                         string year = Console.ReadLine();
-                        url = "https://localhost:44338/languages/year?year=" + year;
+                        url = "https://localhost:44338/languages/year/" + year;
                         GetLanguagesByYear(url, year).GetAwaiter().GetResult();
                         break;
                     case "3":
@@ -50,11 +50,11 @@ namespace ApiConsumer
                     case "4":
                         Console.WriteLine("Inform the language to be updated:\n");
                         name = Console.ReadLine();
-                        Console.WriteLine("Inform the year of creation:\n");
+                        Console.WriteLine("\nInform the year of creation:\n");
                         year = Console.ReadLine();
-                        Console.WriteLine("Inform the chief developer and company:\n");
+                        Console.WriteLine("\nInform the chief developer and company:\n");
                         string chiefdevelopercompany = Console.ReadLine();
-                        Console.WriteLine("Inform the predecessors:\n");
+                        Console.WriteLine("\nInform the predecessors:\n");
                         string predecessors = Console.ReadLine();
                         url = "https://localhost:44338/languages?name=" + name;
                         UpdateLanguage(url, name, year, chiefdevelopercompany, predecessors).GetAwaiter().GetResult();
@@ -104,15 +104,12 @@ namespace ApiConsumer
                     Chiefdevelopercompany = chiefdevelopercompany,
                     Predecessors = predecessors
                 };
-
                 var json = JsonSerializer.Serialize(newLanguage);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PostAsync(url, data);
-                var content = await response.Content.ReadAsStringAsync();
-                var language = JsonSerializer.Deserialize<Language>(content);
+                httpClient.PostAsync(url, data);
 
-                Console.WriteLine($"\n{language.Name} was successfully added to the languages file\n");
+                Console.WriteLine($"\n{name} was successfully added to the languages file\n");
             }
 
             catch (Exception ex)
@@ -120,7 +117,6 @@ namespace ApiConsumer
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 throw;
             }
-
         }
 
         public static async Task GetAllLanguages(string url)
@@ -153,11 +149,13 @@ namespace ApiConsumer
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
+                if (content == null) return;
                 var languages = JsonSerializer.Deserialize<List<Language>>(content);
 
                 string message = $"\n{languages.Count()} languages were created in {year}: \n";
 
                 if (languages.Count() == 1) message = $"\n1 language was created in {year}: \n";
+                if (languages.Count() == 0) message = $"\nNo language was created in {year} \n";
 
                 Console.WriteLine(message);
 
@@ -182,11 +180,13 @@ namespace ApiConsumer
 
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
-                var language = JsonSerializer.Deserialize<Language>(content);
 
-
-                Console.WriteLine($"\n{language.Name} was created in {language.Year} by {language.Chiefdevelopercompany} and inspired in {language.Predecessors}\n");
-
+                if (content == "No correspondence") Console.WriteLine("\nThere is no such language in the file");
+                else
+                {
+                    var language = JsonSerializer.Deserialize<Language>(content);
+                    Console.WriteLine($"\n{language.Name} was created in {language.Year} by {language.Chiefdevelopercompany} and inspired in {language.Predecessors}\n");
+                }                            
             }
 
             catch (Exception ex)
@@ -215,9 +215,12 @@ namespace ApiConsumer
 
                 var response = await httpClient.PutAsync(url, data);
                 var content = await response.Content.ReadAsStringAsync();
-                var language = JsonSerializer.Deserialize<Language>(content);
 
-                Console.WriteLine($"\n{language.Name} was successfully updated to the languages file\n");
+                if (content == "No correspondence") Console.WriteLine("\nThere is no such language in the file");
+                else
+                {
+                    Console.WriteLine($"\n{name} was successfully updated to the languages file\n");
+                }
             }
 
             catch (Exception ex)
@@ -228,17 +231,21 @@ namespace ApiConsumer
 
         }
 
-        public static async Task DeleteLanguage(string url, string language)
+        public static async Task DeleteLanguage(string url, string name)
         {
             try
             {
                 HttpClient httpClient = new HttpClient();
 
                 var response = await httpClient.DeleteAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
 
-                Console.WriteLine($"\n{language} was successfully deleted from the languages file\n");
+                if (content == "No correspondence") Console.WriteLine("\nThere is no such language in the file");
+                else
+                {
+                    Console.WriteLine($"\n{name} was successfully deleted from the languages file\n");
+                }              
             }
-
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
